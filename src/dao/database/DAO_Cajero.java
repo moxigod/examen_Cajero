@@ -100,7 +100,35 @@ public class DAO_Cajero implements CRUD<Cajero>{
 
     @Override
     public int eliminar(int id) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+       
+        int respuesta = 0;
+        basedatos bd = new basedatos();
+        
+        
+        try {
+            if (bd.getConn() != null) {
+                StringBuilder sql = new StringBuilder();
+                
+                sql.append("DELETE FROM tbl_deposito ")
+                        .append(" WHERE id = ? ");
+                PreparedStatement st = bd.getConn().prepareStatement(sql.toString(), PreparedStatement.RETURN_GENERATED_KEYS);
+                st.setInt(1, id);
+                
+                if (st.executeUpdate() == 1) {
+                    respuesta = 1;
+                    
+                }                
+               
+            }
+        } catch (Exception e) {
+            
+        }finally{
+            
+            bd.cerrarConexion();
+        }
+        
+        
+        return respuesta;  
     }
 
     @Override
@@ -142,12 +170,80 @@ public class DAO_Cajero implements CRUD<Cajero>{
 
     @Override
     public List<Cajero> obtenerPor(String columna, String dato) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+       List<Cajero> cajero = new ArrayList();
+        basedatos bd = new basedatos();
+        
+        try {
+            if (bd.getConn() != null) {
+                StringBuilder sql = new StringBuilder();
+                
+                sql.append("SELECT * FROM tbl_cajero")
+                        .append(" WHERE ")
+                        .append(columna).append(" LIKE ? ");
+                PreparedStatement st = bd.getConn().prepareStatement(sql.toString());
+                st.setString(1, "%"+dato+"%");
+                
+                ResultSet rs = st.executeQuery();
+                
+                while(rs.next()){
+                    Cajero c = new Cajero();
+                    c.setId(rs.getInt("id"));
+                    c.setCliente(rs.getString("cliente"));
+                    c.setAhorro(rs.getDouble("ahorro"));
+                    c.setCredito(rs.getInt("credito"));
+                    c.setVencimiento(rs.getString("vencimiento"));
+                    
+                    
+                    cajero.add(c);
+                }
+                
+            }
+        } catch (Exception e) {
+            
+        }finally{
+            bd.cerrarConexion();
+        }
+        
+        return cajero;
     }
 
     @Override
     public Cajero obtenerId(int id) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        Cajero c = new Cajero();
+        basedatos bd = new basedatos();
+        
+        try {
+            if (bd.getConn() != null) {
+                StringBuilder sql = new StringBuilder();
+                
+                sql.append("SELECT * FROM tbl_cajero")
+                        .append(" WHERE ")
+                        .append(" id = ? ");
+                PreparedStatement st = bd.getConn().prepareStatement(sql.toString());
+                st.setInt(1, id);
+                ResultSet rs = st.executeQuery();
+                
+                if(rs.next()){
+    
+                    c.setId(rs.getInt("id"));
+                    c.setCliente(rs.getString("cliente"));
+                    c.setAhorro(rs.getDouble("ahorro"));
+                    c.setCredito(rs.getInt("credito"));
+                    c.setVencimiento(rs.getString("vencimiento"));
+                    
+                    
+                   
+                }
+                
+            }
+        } catch (Exception e) {
+            
+        }finally{
+            bd.cerrarConexion();
+        }
+        
+        return c;
+        
     }
     
 }
